@@ -1,2 +1,2 @@
 reedWidth, reedHeight, slotNumber, slotWidth, slotHeight, slotSpacing
-207.5,85.0,42,1.125,59.999996,2.1
+282.5,85.0,30,2.2999997,59.999996,3.9999998,184.99998

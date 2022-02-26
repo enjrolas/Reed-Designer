@@ -49,9 +49,9 @@ void setup() {
   // add a vertical slider
   cp5.addSlider("slotNumber")
     .setLabel("number of slots")
-     .setNumberOfTickMarks(100) 
-     .snapToTickMarks(true)
-     .showTickMarks(false)
+    .setNumberOfTickMarks(100) 
+    .snapToTickMarks(true)
+    .showTickMarks(false)
     .setPosition(500, 20)
     .setSize(20, 200)
     .setRange(1, 100)
@@ -80,6 +80,19 @@ void setup() {
     .setValue(reed.reedHeight)
     ;
 
+  ;
+
+  // add a vertical slider
+  cp5.addSlider("heddleWidth")
+    .setLabel("heddleWidth")
+
+    .setPosition(950, 20)
+    .setSize(20, 200)
+    .setRange(0, 200)
+    .setValue(reed.heddleWidth)
+    ;
+
+
   // create a new button with name 'savePattern'
   cp5.addButton("savePattern")
     .setLabel("Save Pattern")
@@ -99,10 +112,10 @@ void draw() {
   float yFill=(height-offsetY-100)/reed.reedHeight;
   scale=(xFill>yFill)? yFill: xFill;
   drawReed(g, scale, 100, 300);
-  if(millis()-saved<5000)
+  if (millis()-saved<5000)
   {
-    
-    fill(0,60,180);
+
+    fill(0, 60, 180);
     rect(width/2, height-200, width*.9, 100);
     fill(255);
     text("saved to "+ filename, width*.15, height-200);
@@ -116,6 +129,7 @@ void stop() {
 
 
 void controlEvent(ControlEvent theEvent) {
+  float totalSlotWidth, leftoverSpace, totalSlotSpacing;
   if (initialized)   //get booted up
   {
     switch(theEvent.getController().getName()) {
@@ -124,23 +138,38 @@ void controlEvent(ControlEvent theEvent) {
       break;
       case("slotWidth"):
       reed.slotWidth=theEvent.getController().getValue();
+      totalSlotWidth=reed.slotWidth*reed.slotNumber;
+      leftoverSpace=reed.heddleWidth-totalSlotWidth;
+      reed.slotSpacing=leftoverSpace/(reed.slotNumber-1);
       break;
-      case("slotNumber"):
-        reed.slotNumber=round(theEvent.getController().getValue());
+      case("slotNumber"):      
+      reed.slotNumber=round(theEvent.getController().getValue());
+      totalSlotSpacing=reed.slotSpacing*(reed.slotNumber-1);      
+      leftoverSpace=reed.heddleWidth-totalSlotSpacing;
+      reed.slotWidth=leftoverSpace/(reed.slotNumber);
       break;
       case("reedWidth"):
       reed.reedWidth=theEvent.getController().getValue();
       break;
       case("reedHeight"):
-      reed.reedHeight=theEvent.getController().getValue();
+      reed.reedHeight=theEvent.getController().getValue();      
       break;
-      case("slotSpacing"):
+
+      case("slotSpacing"):      
       reed.slotSpacing=theEvent.getController().getValue();
+      totalSlotSpacing=reed.slotSpacing*(reed.slotNumber-1);      
+      leftoverSpace=reed.heddleWidth-totalSlotSpacing;
+      reed.slotWidth=leftoverSpace/(reed.slotNumber);
       break;
+      
+      case("heddleWidth"):
+      reed.heddleWidth=theEvent.getController().getValue();      
+      break;
+      
       case("savePattern"):
       {
-        filename="Reed Pattern/Reed pattern "+nf(reed.slotNumber,0,0)+" slots -- "+nf(reed.slotWidth,0,2)+" mm slot width X "+nf(reed.slotHeight,0,2)+" mm slot height.pdf";
-        
+        filename="Reed Pattern/Reed pattern "+nf(reed.slotNumber, 0, 0)+" slots -- "+nf(reed.slotWidth, 0, 2)+" mm slot width X "+nf(reed.slotHeight, 0, 2)+" mm slot height.pdf";
+
         PGraphics pdf = createGraphics(300, 300, PDF, filename);    
         pdf.beginDraw();
         drawReed(pdf, 1, 50, 50);
@@ -165,7 +194,7 @@ void drawReed(PGraphics g, float scale, float offsetX, float offsetY)
   g.noFill();
   g.pushMatrix();
   g.translate(offsetX, offsetY);
-  g.text(reed.slotNumber+" slots, slots are "+nf(reed.slotWidth,0,2)+" x "+nf(reed.slotHeight,0,2)+" mm with "+nf(reed.slotSpacing,0,2)+" mm spacing in between", 0, 0);
+  g.text(reed.slotNumber+" slots, slots are "+nf(reed.slotWidth, 0, 2)+" x "+nf(reed.slotHeight, 0, 2)+" mm with "+nf(reed.slotSpacing, 0, 2)+" mm spacing in between", 0, 0);
   g.translate(0, 30);
   g.rectMode(CORNER);
   g.strokeWeight(2);
@@ -178,7 +207,7 @@ void drawReed(PGraphics g, float scale, float offsetX, float offsetY)
   g.fill(#D3EAC7);
   if (reed.slotNumber%2==1)
   {
-    g.rect(0, 0, scale*reed.slotWidth, scale*reed.slotHeight);
+    g.rect(0, 0, scale*reed.slotWidth, scale*reed.slotHeight, scale*reed.slotWidth/2);
     for (int i=1; i<reed.slotNumber/2+1; i++)
     {
       g.pushMatrix();
