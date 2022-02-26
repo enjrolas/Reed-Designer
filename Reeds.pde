@@ -80,15 +80,6 @@ void setup() {
     .setValue(reed.reedHeight)
     ;
 
-  // add a vertical slider
-  cp5.addSlider("scale")
-    .setLabel("Zoom")
-    .setPosition(950, 20)
-    .setSize(20, 200)
-    .setRange(1, 10)
-    .setValue(1)
-    ;
-
   // create a new button with name 'savePattern'
   cp5.addButton("savePattern")
     .setLabel("Save Pattern")
@@ -102,6 +93,11 @@ void setup() {
 void draw() {
   background(40);
   fill(80);
+  int offsetX=100;
+  int offsetY=300;
+  float xFill=(width-2*offsetX)/reed.reedWidth;
+  float yFill=(height-offsetY-100)/reed.reedHeight;
+  scale=(xFill>yFill)? yFill: xFill;
   drawReed(g, scale, 100, 300);
   if(millis()-saved<5000)
   {
@@ -141,12 +137,9 @@ void controlEvent(ControlEvent theEvent) {
       case("slotSpacing"):
       reed.slotSpacing=theEvent.getController().getValue();
       break;
-      case("scale"):
-      scale=theEvent.getController().getValue();
-      break;
       case("savePattern"):
       {
-        filename=dataPath("Reed pattern "+nf(reed.slotNumber,0,0)+" slots -- "+nf(reed.slotWidth,0,2)+" mm slot width X "+nf(reed.slotHeight,0,2)+" mm slot height.pdf");
+        filename="Reed Pattern/Reed pattern "+nf(reed.slotNumber,0,0)+" slots -- "+nf(reed.slotWidth,0,2)+" mm slot width X "+nf(reed.slotHeight,0,2)+" mm slot height.pdf";
         
         PGraphics pdf = createGraphics(300, 300, PDF, filename);    
         pdf.beginDraw();
